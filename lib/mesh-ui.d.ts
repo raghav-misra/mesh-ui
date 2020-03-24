@@ -1,7 +1,6 @@
 declare module MeshUI {
     /* Methods */
-    function jsx(tagName: string | Function, props: IProps, children: any[]);
-    function dom(strings: string[], ...templates: any[]);
+    function jsx(tagName: string | Function, props: Record<string, any>, children: any[]);
     function html(strings: string[], ...templates: any[]);
 
     function render(child: any, parent: Node): Node;
@@ -10,19 +9,30 @@ declare module MeshUI {
 
     function state<T>(initialState: T): IState;
 
+    function customElement(config: IElementConfig): Type<HTMLElement>;
+
     const checkType: ITypeCheckers;
 
     /* Types */
-    interface IProps {
-        [name: string]: any;
-    }
-
     interface ITypeCheckers {
         isStateObject: boolean;
         isCustomElementWatcher: boolean;
     }
 
-    type IComponent = (props?: IProps, children?: any[]) => any; 
+    interface IElementConfig {
+        tagName: string;
+        render(props: IElementRenderProps): any;
+
+        extends?: string | [Type<HTMLElement>, string];
+        statefulAttributes?: string[];
+        defaultAttributeValues?: Record<string, string>;
+    }
+
+    interface IElementRenderProps {
+
+    }
+
+    type IComponent = (props?: Record<string, any>, children?: any[]) => any; 
 
     type IStateFunction<T = any> = (...newState: T[]) => T | void;
     interface IState extends IStateFunction {
@@ -31,4 +41,8 @@ declare module MeshUI {
         __isMeshStateObject__: boolean;
     }
     type IStateWatchCallback<T = any> = (oldValue: T, newValue: T, data: any) => any;
+
+    interface Type<T> extends Function {
+        new (...args: any[]): T;
+    }
 }

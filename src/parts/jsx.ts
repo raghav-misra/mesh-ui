@@ -4,7 +4,7 @@ import htm from './htm';
 import { isStateObject, isCustomElementWatcher } from './type-checks';
 
 /* Hyperscript function renders Component or DOM nodes */
-export function jsx(tagName: string | MeshUI.IComponent, props: MeshUI.IProps, ...children: any[]) {
+export function jsx(tagName: string | MeshUI.IComponent, props: Record<string, any>, ...children: any[]) {
     // Create Component if tagName is a function:
     if (typeof tagName === "function") return tagName(props, children);
 
@@ -53,5 +53,4 @@ export function setHtmlProp(element: HTMLElement, name: string, value: any) {
 }
 
 /* Lit tagged template version of jsx() [thx htm]: */
-export const dom = htm.bind(jsx);
-export const html = dom;
+export const html = htm.bind(jsx);
