@@ -54,3 +54,4 @@ export function setHtmlProp(element: HTMLElement, name: string, value: any) {
 
 /* Lit tagged template version of jsx() [thx htm]: */
 export const dom = htm.bind(jsx);
+export const html = dom;

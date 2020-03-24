@@ -1,8 +1,8 @@
 declare module MeshUI {
     /* Methods */
     function jsx(tagName: string | Function, props: IProps, children: any[]);
-
     function dom(strings: string[], ...templates: any[]);
+    function html(strings: string[], ...templates: any[]);
 
     function render(child: any, parent: Node): Node;
 
