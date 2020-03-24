@@ -19,21 +19,10 @@ declare module MeshUI {
         isCustomElementWatcher: boolean;
     }
 
-    interface IElementConfig {
-        tagName: string;
-        render(props: IElementRenderProps): any;
-
-        extends?: Type<HTMLElement> | [Type<HTMLElement>, string];
-        statefulAttributes?: string[];
-        defaultAttributeValues?: Record<string, string>;
-    }
-
-    interface IElementRenderProps {
-        watch(attribute: string): IElementWatcher;
-    }
-
+    /* JS Component Function */
     type IComponent = (props?: Record<string, any>, children?: any[]) => any; 
 
+    /* State */
     type IStateFunction<T = any> = (...newState: T[]) => T | void;
     type IState = IStateValue | IStateObject | IStateArray;
     type IStateWatchCallback<T = any> = (oldValue: T, newValue: T, data: any) => any;
@@ -48,12 +37,24 @@ declare module MeshUI {
     }
     type IStateArray = Array<IState>;
     
-
+    /* Custom Element */
     type IElementWatcherFunction<T = any> = (...newState: T[]) => T | void;
     interface IElementWatcher {
         
     }
+    interface IElementConfig {
+        tagName: string;
+        render(props: IElementRenderProps): any;
 
+        extends?: Type<HTMLElement> | [Type<HTMLElement>, string];
+        statefulAttributes?: string[];
+        defaultAttributeValues?: Record<string, string>;
+    }
+    interface IElementRenderProps {
+        watch(attribute: string): IElementWatcher;
+    }
+
+    /* Utility to get class of type */
     interface Type<T> extends Function {
         new (...args: any[]): T;
     }
