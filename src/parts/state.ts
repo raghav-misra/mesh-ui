@@ -1,7 +1,15 @@
 /// <reference path="../../lib/mesh-ui.d.ts" />
 import { setHtmlProp } from './jsx';
 
-export function state<T = any>(initialState: T): MeshUI.IState {
+export function state<T = any>(initialState: T): MeshUI.IState | MeshUI.IStateObject {
+    // If object, return object with states:
+    if (typeof initialState === 'object') {
+        const returnObject: MeshUI.IStateObject = Object.create(null);
+        Object.keys(initialState).forEach(key => 
+            initialState.hasOwnProperty(key) && (returnObject[key] = state(initialState[key])));
+        return returnObject;
+    }
+
 	// Storage inaccessible outside function:
 	let internalValue = initialState;
 

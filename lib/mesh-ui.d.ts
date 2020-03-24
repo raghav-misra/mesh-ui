@@ -23,13 +23,13 @@ declare module MeshUI {
         tagName: string;
         render(props: IElementRenderProps): any;
 
-        extends?: string | [Type<HTMLElement>, string];
+        extends?: Type<HTMLElement> | [Type<HTMLElement>, string];
         statefulAttributes?: string[];
         defaultAttributeValues?: Record<string, string>;
     }
 
     interface IElementRenderProps {
-
+        watch(attribute: string): IElementWatcher;
     }
 
     type IComponent = (props?: Record<string, any>, children?: any[]) => any; 
@@ -40,7 +40,17 @@ declare module MeshUI {
         attachCallback(callback: IStateWatchCallback, initialData: any);
         __isMeshStateObject__: boolean;
     }
+    interface IStateObject {
+        [key: string]: IState | IStateObject;
+        [key: number]: IState | IStateObject
+    }
+
     type IStateWatchCallback<T = any> = (oldValue: T, newValue: T, data: any) => any;
+
+    type IElementWatcherFunction<T = any> = (...newState: T[]) => T | void;
+    interface IElementWatcher {
+        
+    }
 
     interface Type<T> extends Function {
         new (...args: any[]): T;
