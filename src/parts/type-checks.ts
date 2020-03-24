@@ -1,5 +1,5 @@
 export function isStateObject(value) {
-    if (value.__isMeshStateObject__ && typeof value === "function") return true;
+    if (value.__isMeshStateFunction__ && typeof value === "function") return true;
     return false;
 }
 

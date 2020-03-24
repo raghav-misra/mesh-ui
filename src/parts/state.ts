@@ -1,9 +1,16 @@
 /// <reference path="../../lib/mesh-ui.d.ts" />
 import { setHtmlProp } from './jsx';
 
-export function state<T = any>(initialState: T): MeshUI.IState | MeshUI.IStateObject {
+export function state<T = any>(initialState: T): MeshUI.IState {
+    // If array, return array with states:
+    if (Array.isArray(initialState)) {
+        const returnArray: MeshUI.IStateArray = [];
+        initialState.forEach((value) => returnArray.push(state(value)));
+        return returnArray;
+    }
+
     // If object, return object with states:
-    if (typeof initialState === 'object') {
+    else if (typeof initialState === 'object') {
         const returnObject: MeshUI.IStateObject = Object.create(null);
         Object.keys(initialState).forEach(key => 
             initialState.hasOwnProperty(key) && (returnObject[key] = state(initialState[key])));
@@ -47,7 +54,7 @@ export function state<T = any>(initialState: T): MeshUI.IState | MeshUI.IStateOb
     returnFunction.attachCallback = (callback, data) => callbacks.push([callback, data]);
     
     // State Object Identifier:
-	returnFunction.__isMeshStateObject__ = true;
+	returnFunction.__isMeshStateFunction__ = true;
 
     // No touchy touchy
 	Object.seal(returnFunction);

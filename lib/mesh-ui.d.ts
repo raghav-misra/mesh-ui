@@ -35,17 +35,19 @@ declare module MeshUI {
     type IComponent = (props?: Record<string, any>, children?: any[]) => any; 
 
     type IStateFunction<T = any> = (...newState: T[]) => T | void;
-    interface IState extends IStateFunction {
+    type IState = IStateValue | IStateObject | IStateArray;
+    type IStateWatchCallback<T = any> = (oldValue: T, newValue: T, data: any) => any;
+    interface IStateValue extends IStateFunction {
         attach(element: HTMLElement, property: string): void;
         attachCallback(callback: IStateWatchCallback, initialData: any);
-        __isMeshStateObject__: boolean;
+        __isMeshStateFunction__: boolean;
     }
     interface IStateObject {
-        [key: string]: IState | IStateObject;
-        [key: number]: IState | IStateObject
+        [key: string]: IState;
+        [key: number]: IState;
     }
-
-    type IStateWatchCallback<T = any> = (oldValue: T, newValue: T, data: any) => any;
+    type IStateArray = Array<IState>;
+    
 
     type IElementWatcherFunction<T = any> = (...newState: T[]) => T | void;
     interface IElementWatcher {
