@@ -1,6 +1,7 @@
 /// <reference path="../../lib/mesh-ui.d.ts" />
 import { render } from './dom';
 import htm from './htm';
+import { isStateObject, isCustomElementWatcher } from './type-checks';
 
 /* Hyperscript function renders Component or DOM nodes */
 export function jsx(tagName: string | MeshUI.IComponent, props: MeshUI.IProps, ...children: any[]) {
@@ -28,12 +29,12 @@ export function setHtmlProp(element: HTMLElement, name: string, value: any) {
     const trimmedName: string = name.trim();
 
     // If state, attach element:
-    if (value.__isRevueStateObject__ && typeof value === "function") 
+    if (isStateObject(value)) 
         return value.attach(element, name);
 
     // If custom element watcher, attach to internal state:
-    if (value.__isRevueAttrWatchObject__ && typeof value === "function") 
-        return setHtmlProp(element, name, value.__revueInternalState__);
+    if (isCustomElementWatcher(value)) 
+        return setHtmlProp(element, name, value.__meshInternalState__);
 
     // className becomes class:
     if (caselessName == "classname")

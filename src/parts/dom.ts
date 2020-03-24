@@ -1,4 +1,5 @@
 /// <reference path="../../lib/mesh-ui.d.ts" />
+import { isStateObject, isCustomElementWatcher } from './type-checks';
 
 /* Converts child to Node, and appends it to parent Node */
 export function render(child: any, parent: Node): Node {
@@ -12,7 +13,7 @@ export function render(child: any, parent: Node): Node {
 	else if (child instanceof Node) parent.appendChild(child);
 
 	// Is it Revue State?
-	else if (child.__isMeshStateObject__ && typeof child === "function") {
+	else if (isStateObject(child) && typeof child === "function") {
 		// Render Current Value:
 		childAsNode = render(child(), parent);
 
@@ -23,8 +24,8 @@ export function render(child: any, parent: Node): Node {
 	}
 
 	// Is it Attr Watcher:
-	else if (child.__isRevueAttrWatchObject__ && typeof child === "function")
-		childAsNode = render(child.__revueInternalState__, parent);
+	else if (isCustomElementWatcher(child))
+		childAsNode = render(child.__meshInternalState__, parent);
 
 	// Fallback: convert to string & render Text node:
 	else {
