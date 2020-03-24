@@ -1,8 +1,9 @@
+const ESMWebpackPlugin = require("@purtuga/esm-webpack-plugin");
 const path = require('path');
 
 module.exports = {
     entry: './src/mesh-ui.ts',
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     module: {
     rules: [
         {
@@ -18,5 +19,10 @@ module.exports = {
     output: {
         filename: 'mesh-ui.js',
         path: path.resolve(__dirname, 'lib'),
+        library: "LIB",
+        libraryTarget: "var"
     },
+    plugins: [
+        new ESMWebpackPlugin()
+    ]
 };
