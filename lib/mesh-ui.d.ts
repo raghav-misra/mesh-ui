@@ -10,9 +10,16 @@ declare module MeshUI {
 
     function state<T>(initialState: T): IState;
 
+    const checkType: ITypeCheckers;
+
     /* Types */
     interface IProps {
         [name: string]: any;
+    }
+
+    interface ITypeCheckers {
+        isStateObject: boolean;
+        isCustomElementWatcher: boolean;
     }
 
     type IComponent = (props?: IProps, children?: any[]) => any; 
