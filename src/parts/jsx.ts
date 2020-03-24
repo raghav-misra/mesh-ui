@@ -11,7 +11,8 @@ export function jsx(tagName: string | MeshUI.IComponent, props: MeshUI.IProps, .
     const element = document.createElement(tagName);
 
     // Loop over & add props:
-    Object.keys(props).map((name: string) => props.hasOwnProperty(name) && setHtmlProp(element, name, props[name]));
+    props && Object.keys(props).map((name: string) => 
+        props.hasOwnProperty(name) && setHtmlProp(element, name, props[name]));
 
     // Add children:
     render(children, element);
