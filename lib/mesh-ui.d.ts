@@ -35,7 +35,7 @@ declare module MeshUI {
         [key: string]: IState;
         [key: number]: IState;
     }
-    type IStateArray = Array<IState>;
+    type IStateArray = IState[];
     
     /* Custom Element */
     type IElementWatcherFunction<T = any> = (...newState: T[]) => T | void;
@@ -46,7 +46,7 @@ declare module MeshUI {
         tagName: string;
         render(props: IElementRenderProps): any;
 
-        extends?: Type<HTMLElement> | [Type<HTMLElement>, string];
+        extends?: Type<HTMLElement>;
         statefulAttributes?: string[];
         defaultAttributeValues?: Record<string, string>;
     }
