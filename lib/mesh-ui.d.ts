@@ -46,7 +46,7 @@ declare module MeshUI {
         tagName: string;
         render(props: IElementRenderProps): any;
 
-        extends?: Type<HTMLElement> | [Type<HTMLElement>, string];
+        extends?: Type<HTMLElement>;
         statefulAttributes?: string[];
         defaultAttributeValues?: Record<string, string>;
     }
