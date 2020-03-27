@@ -24,23 +24,23 @@ declare module MeshUI {
 
     /* State */
     type IStateFunction<T = any> = (...newState: T[]) => T | void;
-    type IState = IStateValue | IStateObject | IStateArray;
+    type IState<T = any> = IStateValue<T> | IStateObject<T> | IStateArray<T>;
     type IStateWatchCallback<T = any> = (oldValue: T, newValue: T, data: any) => any;
-    interface IStateValue extends IStateFunction {
+    interface IStateValue<T = any> extends IStateFunction<T> {
         attach(element: HTMLElement, property: string): void;
-        attachCallback(callback: IStateWatchCallback, initialData: any);
+        attachCallback<T>(callback: IStateWatchCallback<T>, initialData: any);
         __isMeshStateFunction__: boolean;
     }
-    interface IStateObject {
-        [key: string]: IState;
-        [key: number]: IState;
+    interface IStateObject<T = any> {
+        [key: string]: IState<T>;
     }
-    type IStateArray = IState[];
+    type IStateArray<T = any> = IState<T>[];
     
     /* Custom Element */
-    type IElementWatcherFunction<T = any> = (...newState: T[]) => T | void;
-    interface IElementWatcher {
-        
+    type IElementWatcherFunction = () => string;
+    interface IElementWatcher extends IElementWatcherFunction {
+        __meshInternalState__: IState<string>;
+        attachCallback(callback: IStateWatchCallback<string>, initialData: any);
     }
     interface IElementConfig {
         tagName: string;

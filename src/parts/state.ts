@@ -1,17 +1,18 @@
 /// <reference path="../../lib/mesh-ui.d.ts" />
 import { setHtmlProp } from './set-property';
 
-export function state<T = any>(initialState: T): MeshUI.IState {
+export function state<T = any>(initialState: T | T[] | Record<string | number | symbol, T>): 
+    MeshUI.IStateArray | MeshUI.IStateObject | MeshUI.IStateValue {
     // If array, return array with states:
     if (Array.isArray(initialState)) {
-        const returnArray: MeshUI.IStateArray = [];
+        const returnArray: MeshUI.IStateArray<T> = [];
         initialState.forEach((value) => returnArray.push(state(value)));
         return returnArray;
     }
 
     // If object, return object with states:
     else if (typeof initialState === 'object') {
-        const returnObject: MeshUI.IStateObject = Object.create(null);
+        const returnObject: MeshUI.IStateObject<T> = Object.create(null);
         Object.keys(initialState).forEach(key => 
             initialState.hasOwnProperty(key) && (returnObject[key] = state(initialState[key])));
         return returnObject;
@@ -24,7 +25,7 @@ export function state<T = any>(initialState: T): MeshUI.IState {
 	const dataList = [];
 	const callbacks = [];
 
-	const returnFunction = (...newState) => {
+	const returnFunction: MeshUI.IStateValue<T> = (...newState) => {
 		// Set:
 		if (newState.length > 0) {
 			const oldValue = internalValue;	

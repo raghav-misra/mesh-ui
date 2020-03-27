@@ -4,6 +4,6 @@ export function isStateObject(value) {
 }
 
 export function isCustomElementWatcher(value) {
-    if (value.__isMeshCustomElementWatcher__ && typeof value === "function") return true;
+    if (value.__meshInternalState__ && typeof value === "function") return true;
     return false;
 }

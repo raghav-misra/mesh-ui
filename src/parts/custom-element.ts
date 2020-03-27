@@ -1,5 +1,6 @@
 /// <reference path="../../lib/mesh-ui.d.ts" />
 import { render } from './dom';
+import { state } from './state';
 
 export function customElement(config: MeshUI.IElementConfig) {
     // Check passed configuration for falsy values:
@@ -9,19 +10,37 @@ export function customElement(config: MeshUI.IElementConfig) {
         extends: config.extends || HTMLElement,
         statefulAttributes: config.statefulAttributes || [],
         defaultAttributeValues: config.defaultAttributeValues || Object.create(null)
+    };	
+
+    // Set up attribute binding:
+    const attributeWatchers: Record<string, MeshUI.IStateArray<string>> = Object.create(null);
+    const watchElement = (element: HTMLElement, attribute: string) => {
+        attributeWatchers[attribute] = attributeWatchers[attribute] || [];
+        const internalState = state(element.getAttribute(attribute)) as MeshUI.IStateValue<string>;
+        attributeWatchers[attribute].push(internalState);
+
+        const stateWrapper: MeshUI.IElementWatcherFunction = () => internalState() as string;
+        const attachCallback = (callback: MeshUI.IStateWatchCallback<string>, initialData: any) => 
+            internalState.attachCallback(callback, initialData);
+        return Object.assign(stateWrapper, { 
+            attachCallback, __meshInternalState__: internalState }) as MeshUI.IElementWatcher;
     };
 
-    // Get super class to extend from:
-    let valueToExtend: MeshUI.Type<HTMLElement>;
-    if (Array.isArray(checkedConfig.extends)) valueToExtend = checkedConfig.extends[0];
-    else valueToExtend = checkedConfig.extends;
-
     // Inner component class:
-    const elementClass = class extends valueToExtend {
+    const elementClass = class extends checkedConfig.extends {
         static get observedAttributes() { return checkedConfig.statefulAttributes; }
+        attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+            attributeWatchers[name] && attributeWatchers[name].forEach(
+                s => (s as MeshUI.IStateValue)(newValue));
+        }
 
         constructor() {
             super(); const instance = this;
+
+            // Make sure all statefulAttributes exist:
+            checkedConfig.statefulAttributes.forEach((attribute => 
+                !instance.hasAttribute(attribute) && 
+                instance.setAttribute(attribute, "")));
 
             // Predefine default values:
             Object.keys(checkedConfig.defaultAttributeValues).forEach(name => 
@@ -35,10 +54,18 @@ export function customElement(config: MeshUI.IElementConfig) {
                 (name => !instance.hasAttribute(name) && instance.setAttribute(name, ""));
 
             // Call render:
+            const children = checkedConfig.render({
+                // Bind values to attributes: 
+                watch: (attribute) => watchElement(instance, attribute)
+            });
 
             // Append children if not falsy:
+            children && render(children, instance);
         }
     }
+
+    customElements.define(checkedConfig.tagName, elementClass);
+    return elementClass;
 }
 
 /*
