@@ -54,8 +54,9 @@ declare module MeshUI {
         watch(attribute: string): IAttributeWatcher;
     }
 
-    /* Utility to get class of type */
+    /* Misc */
     interface Type<T> extends Function {
         new (...args: any[]): T;
     }
+    type TInputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 }

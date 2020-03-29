@@ -1,5 +1,5 @@
 /// <reference path="../../lib/mesh-ui.d.ts" />
-import { isStateObject, isAttributeWatcher } from './type-checks';
+import { isStateObject, isAttributeWatcher, acceptsUserInput } from './type-checks';
 
 /* Special cases for setting property > attribute */
 const validProps = ["innerText", "value", "disabled", "classList", "nodeValue", "textContent"];
@@ -34,6 +34,7 @@ export function setHtmlProp(element: HTMLElement, name: string, value: any) {
 
 export function addPropIfState(element: HTMLElement, name: string, value: MeshUI.IStateValue<any>) {
     const currentValue = value();
+    const canBeBound = acceptsUserInput(element);
 
     // Event handler exception:
     if (name.startsWith("m-on:") && typeof currentValue === "function") {
@@ -44,6 +45,21 @@ export function addPropIfState(element: HTMLElement, name: string, value: MeshUI
             element.addEventListener(eventName, newValue as EventListener);
         }, null);
     }
+
+    // Model for two-way binding:
+    else if (name === "m-model" && canBeBound !== false) {
+        // Set default value:
+        if (canBeBound === "value") 
+                (element as MeshUI.TInputElements).value = value();
+        else element.innerText = value();
+
+        // Set up change watcher:
+        element.addEventListener("input", () => {
+            if (canBeBound === "value") 
+                value((element as MeshUI.TInputElements).value);
+            else value(element.innerText);
+        });
+    } 
 
     // Fallback, just attach value:
     else value.attach(element, name);
