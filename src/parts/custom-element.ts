@@ -19,10 +19,12 @@ export function customElement(config: MeshUI.IElementConfig) {
         const internalState = state(element.getAttribute(attribute)) as MeshUI.IStateValue<string>;
         attributeWatchers[attribute].push(internalState);
 
-        const attachCallback = (callback: MeshUI.IStateWatchCallback<string>, initialData: any) => 
+        const stateWrapper = () => internalState();
+        stateWrapper.attachCallback = (callback: MeshUI.IStateWatchCallback<string>, initialData: any) => 
             internalState.attachCallback(callback, initialData);
-        return Object.assign((() => internalState() as string), { 
-            attachCallback, __isMeshAttributeWatcher__: internalState }) as MeshUI.IAttributeWatcher;
+        stateWrapper.__isMeshAttributeWatcher__ = true;
+        stateWrapper.__meshInternalState__ = internalState;
+        return stateWrapper as MeshUI.IAttributeWatcher;
     };
 
     // Inner component class:

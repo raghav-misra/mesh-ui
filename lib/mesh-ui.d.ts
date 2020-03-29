@@ -38,7 +38,8 @@ declare module MeshUI {
     /* Custom Element */
     type IAttributeWatcher = (() => string) & {
         attachCallback(callback: IStateWatchCallback<string>, initialData: any);
-        __isMeshAttributeWatcher__: IStateValue<string>;
+        __meshInternalState__: IStateValue<string>;
+        __isMeshAttributeWatcher__: boolean;
     }
 
     interface IElementConfig {

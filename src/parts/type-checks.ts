@@ -4,6 +4,6 @@ export function isStateObject(value) {
 }
 
 export function isAttributeWatcher(value) {
-    if (value.__isMeshAttributeWatcher__ && typeof value === "object") return true;
+    if (value.__isMeshAttributeWatcher__ && typeof value === "function") return true;
     return false;
 }
