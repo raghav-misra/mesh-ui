@@ -1,5 +1,5 @@
 /// <reference path="../../lib/mesh-ui.d.ts" />
-import { isStateObject, isCustomElementWatcher } from './type-checks';
+import { isStateObject, isAttributeWatcher } from './type-checks';
 
 /* Special cases for setting property > attribute */
 const validProps = ["innerText", "value", "disabled", "classList", "nodeValue", "textContent"];
@@ -14,7 +14,7 @@ export function setHtmlProp(element: HTMLElement, name: string, value: any) {
         return value.attach(element, name);
 
     // If custom element watcher, attach to internal state:
-    else if (isCustomElementWatcher(value)) 
+    else if (isAttributeWatcher(value)) 
         return setHtmlProp(element, name, value.__meshInternalState__);
 
     

@@ -15,33 +15,32 @@ declare module MeshUI {
 
     /* Types */
     interface ITypeCheckers {
-        isStateObject: boolean;
-        isCustomElementWatcher: boolean;
+        isStateObject(value): boolean;
+        isCustomElementWatcher(value): boolean;
     }
 
     /* JS Component Function */
     type IComponent = (props?: Record<string, any>, children?: any[]) => any; 
 
     /* State */
-    type IStateFunction<T = any> = (...newState: T[]) => T | void;
-    type IState<T = any> = IStateValue<T> | IStateObject<T> | IStateArray<T>;
-    type IStateWatchCallback<T = any> = (oldValue: T, newValue: T, data: any) => any;
-    interface IStateValue<T = any> extends IStateFunction<T> {
+    type IStateValue<T = any> = ((...newState: T[]) => T | void) & {
         attach(element: HTMLElement, property: string): void;
         attachCallback<T>(callback: IStateWatchCallback<T>, initialData: any);
         __isMeshStateFunction__: boolean;
-    }
+    };
+    type IState<T = any> = IStateValue<T> | IStateObject<T> | IStateArray<T>;
+    type IStateWatchCallback<T = any> = (oldValue: T, newValue: T, data: any) => any;
     interface IStateObject<T = any> {
         [key: string]: IState<T>;
     }
     type IStateArray<T = any> = IState<T>[];
     
     /* Custom Element */
-    type IElementWatcherFunction = () => string;
-    interface IElementWatcher extends IElementWatcherFunction {
-        __meshInternalState__: IState<string>;
+    type IAttributeWatcher = (() => string) & {
         attachCallback(callback: IStateWatchCallback<string>, initialData: any);
+        __isMeshAttributeWatcher__: IStateValue<string>;
     }
+
     interface IElementConfig {
         tagName: string;
         render(props: IElementRenderProps): any;
@@ -51,7 +50,7 @@ declare module MeshUI {
         defaultAttributeValues?: Record<string, string>;
     }
     interface IElementRenderProps {
-        watch(attribute: string): IElementWatcher;
+        watch(attribute: string): IAttributeWatcher;
     }
 
     /* Utility to get class of type */

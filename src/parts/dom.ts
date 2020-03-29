@@ -1,5 +1,5 @@
 /// <reference path="../../lib/mesh-ui.d.ts" />
-import { isStateObject, isCustomElementWatcher } from './type-checks';
+import { isStateObject, isAttributeWatcher } from './type-checks';
 
 /* Converts child to Node, and appends it to parent Node */
 export function render(child: any, parent: Node): Node {
@@ -24,7 +24,7 @@ export function render(child: any, parent: Node): Node {
 	}
 
 	// Is it Attr Watcher:
-	else if (isCustomElementWatcher(child))
+	else if (isAttributeWatcher(child))
 		childAsNode = render(child.__meshInternalState__, parent);
 
 	// Fallback: convert to string & render Text node:

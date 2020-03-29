@@ -19,28 +19,36 @@ export function customElement(config: MeshUI.IElementConfig) {
         const internalState = state(element.getAttribute(attribute)) as MeshUI.IStateValue<string>;
         attributeWatchers[attribute].push(internalState);
 
-        const stateWrapper: MeshUI.IElementWatcherFunction = () => internalState() as string;
         const attachCallback = (callback: MeshUI.IStateWatchCallback<string>, initialData: any) => 
             internalState.attachCallback(callback, initialData);
-        return Object.assign(stateWrapper, { 
-            attachCallback, __meshInternalState__: internalState }) as MeshUI.IElementWatcher;
+        return Object.assign((() => internalState() as string), { 
+            attachCallback, __isMeshAttributeWatcher__: internalState }) as MeshUI.IAttributeWatcher;
     };
 
     // Inner component class:
     const elementClass = class extends checkedConfig.extends {
+        // Watchers and data binding:
         static get observedAttributes() { return checkedConfig.statefulAttributes; }
         attributeChangedCallback(name: string, oldValue: string, newValue: string) {
             attributeWatchers[name] && attributeWatchers[name].forEach(
                 s => (s as MeshUI.IStateValue)(newValue));
         }
 
+        // When Element Is Created:
         constructor() {
             super(); const instance = this;
 
+            // Add default values to attributes if blank:
+            Object.keys(checkedConfig.defaultAttributeValues).forEach(attribute => 
+                checkedConfig.defaultAttributeValues.hasOwnProperty(attribute) &&
+                !instance.hasAttribute(attribute) && instance.setAttribute(
+                    attribute, checkedConfig.defaultAttributeValues[attribute])
+            );
+
             // Make sure all statefulAttributes exist:
-            checkedConfig.statefulAttributes.forEach((attribute => 
-                !instance.hasAttribute(attribute) && 
-                instance.setAttribute(attribute, "")));
+            checkedConfig.statefulAttributes.forEach(attribute => 
+                !instance.hasAttribute(attribute) && instance.setAttribute(attribute, "")
+            );
 
             // Predefine default values:
             Object.keys(checkedConfig.defaultAttributeValues).forEach(name => 
@@ -56,7 +64,7 @@ export function customElement(config: MeshUI.IElementConfig) {
             // Call render:
             const children = checkedConfig.render({
                 // Bind values to attributes: 
-                watch: (attribute) => watchElement(instance, attribute)
+                watch: (attribute: string) => watchElement(instance, attribute)
             });
 
             // Append children if not falsy:
@@ -67,26 +75,3 @@ export function customElement(config: MeshUI.IElementConfig) {
     customElements.define(checkedConfig.tagName, elementClass);
     return elementClass;
 }
-
-/*
-customElement({
-    // Tag name in HTML || required
-    tagName: "hello-world",
-
-    // Function that returns children or falsy value || required
-    render(utils) {
-
-    },
-
-    // Native/Custom Element Constructor and/or to extend from || default: HTMLElement
-    extends: [HTMLAnchorElement, "a"],
-
-    // Attributes to observe changes on || default: undefined
-    statefulAttributes: ["data-name"],
-
-    // Default attribute values || default: undefined 
-    defaultAttributeValues: {           
-        "data-name": "xdddd"
-    }
-});
-*/

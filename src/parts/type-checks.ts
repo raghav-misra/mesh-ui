@@ -3,7 +3,7 @@ export function isStateObject(value) {
     return false;
 }
 
-export function isCustomElementWatcher(value) {
-    if (value.__meshInternalState__ && typeof value === "function") return true;
+export function isAttributeWatcher(value) {
+    if (value.__isMeshAttributeWatcher__ && typeof value === "object") return true;
     return false;
 }
