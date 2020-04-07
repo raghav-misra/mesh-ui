@@ -40,6 +40,7 @@ declare module MeshUI {
         attachCallback(callback: IStateWatchCallback<string>, initialData: any);
         __meshInternalState__: IStateValue<string>;
         __isMeshAttributeWatcher__: boolean;
+        __elementAttribute__: [HTMLElement, string];
     }
 
     interface IElementConfig {

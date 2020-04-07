@@ -32,6 +32,7 @@ export function customElement(config: MeshUI.IElementConfig) {
             internalState.attachCallback(callback, initialData);
         stateWrapper.__isMeshAttributeWatcher__ = true;
         stateWrapper.__meshInternalState__ = internalState;
+        stateWrapper.__elementAttribute__ = [element, attribute];
         return stateWrapper as MeshUI.IAttributeWatcher;
     };
 

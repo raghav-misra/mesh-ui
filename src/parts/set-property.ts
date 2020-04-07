@@ -11,6 +11,10 @@ export function setHtmlProp(element: HTMLElement, name: string, value: any) {
     if (isStateObject(value))
         addPropIfState(element, trimmedName, value);
 
+    // If custom element watcher, call with special watcher function:
+    else if (isAttributeWatcher(value)) 
+        addPropIfWatcher(element, trimmedName, value);
+
     // Individual style rules
     else if (trimmedName.startsWith("m-css:")) 
         element.style[trimmedName.replace("m-css:", "").trim()] = value.trim();
@@ -18,10 +22,6 @@ export function setHtmlProp(element: HTMLElement, name: string, value: any) {
     // Add event handlers:
     else if (trimmedName.startsWith("m-on:") && typeof value === "function")
         element.addEventListener(trimmedName.replace("m-on:", "").trim(), value);
-
-    // If custom element watcher, call with internal state:
-    else if (isAttributeWatcher(value)) 
-        addPropIfState(element, trimmedName, value.__meshInternalState__);
 
     // Property > Attributes:
     else if (validProps.indexOf(trimmedName) != -1)
@@ -31,7 +31,7 @@ export function setHtmlProp(element: HTMLElement, name: string, value: any) {
     else element.setAttribute(trimmedName, value.toString());
 }
 
-export function addPropIfState(element: HTMLElement, name: string, value: MeshUI.IStateValue<any>) {
+function addPropIfState(element: HTMLElement, name: string, value: MeshUI.IStateValue<any>) {
     const currentValue = value();
     const canBeBound = acceptsUserInput(element);
 
@@ -49,8 +49,8 @@ export function addPropIfState(element: HTMLElement, name: string, value: MeshUI
     else if (name === "m-model" && canBeBound !== false) {
         // Set default value:
         if (canBeBound === "value") 
-                (element as MeshUI.TInputElements).value = value();
-        else element.innerText = value();
+                (element as MeshUI.TInputElements).value = currentValue;
+        else element.innerText = currentValue;
 
         // Set up change watcher:
         element.addEventListener("input", () => {
@@ -62,4 +62,27 @@ export function addPropIfState(element: HTMLElement, name: string, value: MeshUI
 
     // Fallback, just attach value:
     else value.attach(element, name);
+}
+
+function addPropIfWatcher(element: HTMLElement, name: string, value: MeshUI.IAttributeWatcher) {
+    const currentValue = value.__meshInternalState__() as string;
+    const [target, attribute] = value.__elementAttribute__;
+    const canBeBound = acceptsUserInput(element);
+
+    // Model for two-way binding:
+    if (name === "m-model" && canBeBound !== false) {
+        // Set default value:
+        if (canBeBound === "value") 
+                (element as MeshUI.TInputElements).value = currentValue;
+        else element.innerText = currentValue;
+
+        // Set up change watcher:
+        element.addEventListener("input", () => {
+            if (canBeBound === "value") 
+                target.setAttribute(attribute, (element as MeshUI.TInputElements).value);
+            else target.setAttribute(attribute, element.innerText);
+        });
+    } 
+    // Else use internal state to bind
+    else addPropIfState(element, name, value.__meshInternalState__);
 }
