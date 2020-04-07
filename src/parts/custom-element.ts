@@ -1,6 +1,14 @@
-/// <reference path="../../lib/mesh-ui.d.ts" />
+/// <reference path="../../mesh-ui.d.ts" />
 import { render } from './dom';
 import { state } from './state';
+
+function getAttributes(el: HTMLElement) {
+    const attributes: Record<string, string> = Object.create(null);
+    Array.from(el.attributes).forEach(key => {
+        attributes[key.nodeName] = key.nodeValue;
+    });
+    return attributes;
+}
 
 export function customElement(config: MeshUI.IElementConfig) {
     // Check passed configuration for falsy values:
@@ -25,6 +33,12 @@ export function customElement(config: MeshUI.IElementConfig) {
         stateWrapper.__isMeshAttributeWatcher__ = true;
         stateWrapper.__meshInternalState__ = internalState;
         return stateWrapper as MeshUI.IAttributeWatcher;
+    };
+
+    // Holds lifecycle callbacks: 
+    const lifecycleCallbacks = {
+        connect: [],
+        disconnect: []
     };
 
     // Inner component class:
@@ -66,11 +80,27 @@ export function customElement(config: MeshUI.IElementConfig) {
             // Call render:
             const children = checkedConfig.render({
                 // Bind values to attributes: 
-                watch: (attribute: string) => watchElement(instance, attribute)
+                watch: (attribute: string) => watchElement(instance, attribute),
+                props: getAttributes(instance),
+                children: Array.from(instance.children),
+                on: (eventName: string, handler: Function) => 
+                    instance.addEventListener(eventName, handler as EventListener),
+                connect: (callback: Function) => lifecycleCallbacks.connect.push(callback),
+                disconnect: (callback: Function) => lifecycleCallbacks.disconnect.push(callback),
+                
+                $instance: instance,
             });
 
             // Append children if not falsy:
             children && render(children, instance);
+        }
+
+        // Lifecycle hooks:
+        connectedCallback() {
+            lifecycleCallbacks.connect.forEach(c => c());
+        }
+        disconnectedCallback() {
+            lifecycleCallbacks.disconnect.forEach(c => c());
         }
     }
 

@@ -1,4 +1,3 @@
-/// <reference path="../../lib/mesh-ui.d.ts" />
 import { isStateObject, isAttributeWatcher } from './type-checks';
 
 /* Converts child to Node, and appends it to parent Node */

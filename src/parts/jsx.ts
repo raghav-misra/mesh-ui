@@ -1,11 +1,10 @@
-/// <reference path="../../lib/mesh-ui.d.ts" />
 import { render } from './dom';
 import htm from './htm';
 import { setHtmlProp } from './set-property';
 
 
 /* Hyperscript function renders Component or DOM nodes */
-export function jsx(tagName: string | MeshUI.IComponent, props: Record<string, any>, ...children: any[]) {
+export function jsx(tagName: string | MeshUI.IFunctionComponent, props: Record<string, any>, ...children: any[]) {
     // Create Component if tagName is a function:
     if (typeof tagName === "function") return tagName(props, children);
 

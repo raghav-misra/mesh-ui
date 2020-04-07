@@ -1,4 +1,3 @@
-/// <reference path="../../lib/mesh-ui.d.ts" />
 import { isStateObject, isAttributeWatcher, acceptsUserInput } from './type-checks';
 
 /* Special cases for setting property > attribute */

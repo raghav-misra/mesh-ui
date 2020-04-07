@@ -6,6 +6,6 @@
         "sourceMap": true,
         "lib": ["ES5", "ES2015.Core", "DOM"]
     },
-    "include": ["./src", "lib/mesh-ui.d.ts"],
+    "include": ["./src", "mesh-ui.d.ts"],
     "exclude": ["./node_modules"]
 }

@@ -20,7 +20,7 @@ declare module MeshUI {
     }
 
     /* JS Component Function */
-    type IComponent = (props?: Record<string, any>, children?: any[]) => any; 
+    type IFunctionComponent = (props?: Record<string, any>, children?: any[]) => any; 
 
     /* State */
     type IStateValue<T = any> = ((...newState: T[]) => T | void) & {
@@ -52,6 +52,14 @@ declare module MeshUI {
     }
     interface IElementRenderProps {
         watch(attribute: string): IAttributeWatcher;
+        props: Record<string, string>;
+        children: (Node & ChildNode)[];
+        on(eventName: string, handler: Function): void;
+
+        connect(callback: Function): void;
+        disconnect(callback: Function): void;
+
+        $instance: HTMLElement;
     }
 
     /* Misc */

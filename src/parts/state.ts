@@ -1,4 +1,3 @@
-/// <reference path="../../lib/mesh-ui.d.ts" />
 import { setHtmlProp } from './set-property';
 
 export function state<T = any>(initialState: T | T[] | Record<string | number | symbol, T>): 
